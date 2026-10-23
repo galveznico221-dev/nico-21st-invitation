@@ -1036,7 +1036,7 @@
       images: {
         hero: "", // Example: "images/nico.jpg"
         gate: "",
-        gallery: ["", "", "", "", ""]
+        gallery: ["nico/1.jpg", "nico/2.jpg", "nico/3.jpg", "nico/4.jpg", "nico/5.jpg"] // Add Nico's photos using these names.
       },
       music: "" // Optional audio path.
     };
@@ -1156,10 +1156,10 @@
       paths.forEach((path, index) => {
         const frame = document.createElement("div");
         frame.className = "gallery-photo";
-        frame.append(photoPlaceholder(`Put your photo here · ${String(index + 1).padStart(2, "0")}`));
+        frame.append(photoPlaceholder(`Add Nico's photo · ${String(index + 1).padStart(2, "0")}`));
         const caption = document.createElement("span");
         caption.className = "gallery-caption";
-        caption.textContent = `A favorite moment · ${index + 1}`;
+        caption.textContent = `Nico · Favorite frame ${index + 1}`;
         frame.append(caption);
         gallery.append(frame);
         setPhoto(frame, path, `Birthday memory ${index + 1}`);
