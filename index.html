@@ -345,6 +345,7 @@
     .rsvp-reaction img, .rsvp-reaction video {
       display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 8px;
     }
+    .rsvp-reaction video { cursor: pointer; pointer-events: auto; }
     .rsvp-actions { position: relative; display: flex; flex-wrap: wrap; min-height: 78px; justify-content: center; align-items: center; gap: 12px; margin: var(--sp-2) auto 0; }
     .yes-button, .no-button { min-height: 52px; padding: 12px 22px; border: 1px solid transparent; border-radius: 10px; font-size: .85rem; font-weight: 600; letter-spacing: .06em; white-space: nowrap; cursor: pointer; transition: transform .2s, box-shadow .2s, filter .2s; }
     .yes-button {
@@ -1031,9 +1032,8 @@
           "cry/cat1.jpg", "cry/cat2.jpg", "cry/cat3.jpg", "cry/cat4.jpg", "cry/cat5.jpg",
           "cry/cat6.mp4", "cry/cat7.jpg", "cry/cat8.jpg", "cry/cat9.jpg", "cry/cat10.mp4", "cry/cat0.mp4"
         ],
-        crySoundVideo: "cry/cat6.mp4", // Change this path if a different crying clip should have sound.
         celebrate: ["celebrate/Download.mp4", "celebrate/Download%20(1).mp4", "celebrate/Download%20(2).mp4"],
-        celebrateSoundVideo: "celebrate/Download%20(1).mp4"
+        celebrateSoundVideo: "celebrate/Download%20(1).mp4" // Shown first; any clip can be tapped for sound.
       },
       images: {
         hero: "", // Example: "images/nico.jpg"
@@ -1694,12 +1694,18 @@
       let media;
       if (isVideo) {
         media = document.createElement("video");
-        media.muted = options.muted !== false;
+        media.muted = true;
         media.autoplay = true;
         media.playsInline = true;
         media.loop = true;
         media.preload = "auto";
         media.controls = false;
+        media.setAttribute("aria-label", "Tap to turn video sound on");
+        media.title = "Tap to turn video sound on";
+        media.addEventListener("click", (event) => {
+          event.stopPropagation();
+          toggleReactionVideoSound(media);
+        });
         media.addEventListener("error", () => console.warn(`RSVP reaction video could not load: ${path}`), { once: true });
       } else {
         media = document.createElement("img");
@@ -1716,6 +1722,22 @@
         if (playPromise) playPromise.catch((error) => console.warn(`RSVP reaction video autoplay failed: ${path}`, error));
       }
       return item;
+    }
+    function toggleReactionVideoSound(selectedVideo) {
+      const turnSoundOn = selectedVideo.muted;
+      reactionItems.forEach(({ media }) => {
+        if (!(media instanceof HTMLVideoElement)) return;
+        media.muted = true;
+        media.setAttribute("aria-label", "Tap to turn video sound on");
+        media.title = "Tap to turn video sound on";
+      });
+      if (!turnSoundOn) return;
+
+      selectedVideo.muted = false;
+      selectedVideo.setAttribute("aria-label", "Tap to mute video");
+      selectedVideo.title = "Tap to mute video";
+      const playPromise = selectedVideo.play();
+      if (playPromise) playPromise.catch((error) => console.warn("Reaction video audio could not play.", error));
     }
     function layoutRsvpMedia(force = true) {
       if (!reactionItems.length) return;
@@ -1811,8 +1833,7 @@
       celebrationActive = false;
       const media = CONFIG.rsvpMedia.cry;
       const path = media[Math.min(noClicks - 1, media.length - 1)];
-      const soundPath = CONFIG.rsvpMedia.crySoundVideo;
-      addRsvpMedia(path, { muted: path !== soundPath });
+      addRsvpMedia(path);
       shrinkRsvpMedia();
     }
     function showCelebrationVideos() {
@@ -1822,7 +1843,7 @@
       const celebration = [...CONFIG.rsvpMedia.celebrate].sort((a, b) =>
         Number(b === soundPath) - Number(a === soundPath)
       );
-      celebration.forEach((path) => addRsvpMedia(path, { muted: path !== soundPath, scale: .92 }));
+      celebration.forEach((path) => addRsvpMedia(path, { scale: .92 }));
       layoutRsvpMedia();
     }
     document.addEventListener("click", (event) => {
