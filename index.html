@@ -1031,9 +1031,7 @@
           "cry/cat1.jpg", "cry/cat2.jpg", "cry/cat3.jpg", "cry/cat4.jpg", "cry/cat5.jpg",
           "cry/cat6.mp4", "cry/cat7.jpg", "cry/cat8.jpg", "cry/cat9.jpg", "cry/cat10.mp4", "cry/cat0.mp4"
         ],
-        crySoundVideo: "cry/cat6.mp4", // This crying clip starts with sound when it appears.
         celebrate: ["celebrate/Download.mp4", "celebrate/Download%20(1).mp4", "celebrate/Download%20(2).mp4"],
-        celebrateSoundVideo: "celebrate/Download%20(1).mp4" // Starts with sound when the guest presses Yes.
       },
       images: {
         hero: "", // Example: "images/nico.jpg"
@@ -1811,18 +1809,14 @@
       celebrationActive = false;
       const media = CONFIG.rsvpMedia.cry;
       const path = media[Math.min(noClicks - 1, media.length - 1)];
-      addRsvpMedia(path, { muted: path !== CONFIG.rsvpMedia.crySoundVideo });
+      addRsvpMedia(path, { muted: false });
       shrinkRsvpMedia();
     }
     function showCelebrationVideos() {
       celebrationActive = true;
       clearRsvpMedia();
-      const soundPath = CONFIG.rsvpMedia.celebrateSoundVideo;
-      const celebration = [...CONFIG.rsvpMedia.celebrate].sort((a, b) =>
-        Number(b === soundPath) - Number(a === soundPath)
-      );
-      celebration.forEach((path) => addRsvpMedia(path, {
-        muted: path !== soundPath,
+      CONFIG.rsvpMedia.celebrate.forEach((path) => addRsvpMedia(path, {
+        muted: false,
         scale: .92
       }));
       layoutRsvpMedia();
