@@ -1692,7 +1692,9 @@
       let media;
       if (isVideo) {
         media = document.createElement("video");
-        media.muted = options.muted !== false;
+        media.defaultMuted = false;
+        media.muted = false;
+        media.volume = 1;
         media.autoplay = true;
         media.playsInline = true;
         media.loop = true;
@@ -1809,16 +1811,13 @@
       celebrationActive = false;
       const media = CONFIG.rsvpMedia.cry;
       const path = media[Math.min(noClicks - 1, media.length - 1)];
-      addRsvpMedia(path, { muted: false });
+      addRsvpMedia(path);
       shrinkRsvpMedia();
     }
     function showCelebrationVideos() {
       celebrationActive = true;
       clearRsvpMedia();
-      CONFIG.rsvpMedia.celebrate.forEach((path) => addRsvpMedia(path, {
-        muted: false,
-        scale: .92
-      }));
+      CONFIG.rsvpMedia.celebrate.forEach((path) => addRsvpMedia(path, { scale: .92 }));
       layoutRsvpMedia();
     }
     document.addEventListener("click", (event) => {
