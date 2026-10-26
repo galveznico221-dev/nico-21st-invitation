@@ -370,36 +370,72 @@
     .participants-overlay::before, .host-dashboard::before { position: fixed; inset: 10px; content: ""; border: 1px solid var(--gold-line); border-radius: 16px; pointer-events: none; }
     .overlay-close { position: fixed; z-index: 2; top: 24px; right: 24px; width: 46px; height: 46px; border: 1px solid rgba(245,215,122,.72); border-radius: 50%; background: rgba(5,11,30,.85); color: #ffe99d; font-size: 1.8rem; line-height: 1; cursor: pointer; transition: transform .3s, box-shadow .3s; }
     .overlay-close:hover { transform: rotate(90deg); box-shadow: 0 0 18px rgba(245,215,122,.45); }
-    .participants-content, .dashboard-content { position: relative; width: min(100% - 42px, 760px); margin: 10vh auto 60px; text-align: center; }
+    .participants-content, .dashboard-content { position: relative; width: min(100% - 42px, 980px); margin: 10vh auto 60px; text-align: center; }
     .participants-content h2, .dashboard-content > h1 { margin: 6px 0 0; font: 400 clamp(3rem,12vw,5rem)/1 var(--script); }
     .dashboard-total { color: #e9e3d1; font: 400 1.15rem var(--serif); }
     .async-state { min-height: 1.5em; margin: 10px auto; color: #eed985; font: 400 1rem var(--serif); }
-    .participants-list, .dashboard-list, .waiting-list { width: min(100%, 560px); margin: 18px auto; padding: 0; list-style: none; counter-reset: guest-number; text-align: left; }
-    .participants-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 13px; width: min(100%, 680px); }
-    .participant-group {
-      overflow: hidden; padding: 14px 16px 11px; border: 1px solid rgba(232,200,100,.38); border-radius: 14px;
-      background: linear-gradient(145deg, rgba(25,42,78,.76), rgba(7,14,34,.76));
-      box-shadow: inset 0 1px 0 rgba(255,236,170,.08), 0 12px 28px rgba(0,0,0,.18);
+    .guest-list-search, .dashboard-search { display: block; width: min(100%, 650px); min-height: 48px; margin: 20px auto 18px; padding: 12px 16px; border: 1px solid rgba(215,188,112,.48); border-radius: 12px; outline: none; background: linear-gradient(135deg,rgba(18,42,83,.9),rgba(5,16,39,.94)); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.16); color: #f5f6fb; font: 400 1rem var(--sans); }
+    .guest-list-search::placeholder, .dashboard-search::placeholder { color: #c0cadc; opacity: 1; }
+    .guest-list-search:focus-visible, .dashboard-search:focus-visible { border-color: #f2d477; box-shadow: 0 0 0 3px rgba(243,217,138,.24), 0 8px 22px rgba(0,0,0,.18); }
+    .participants-list, .dashboard-groups { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 16px; width: 100%; margin: 18px auto; text-align: left; }
+    .guest-category-card {
+      --category-accent: #d6ad53;
+      --category-glow: rgba(214,173,83,.13);
+      min-width: 0; min-height: 100%; overflow: hidden;
+      border: 1px solid color-mix(in srgb,var(--category-accent) 48%,transparent);
+      border-radius: 18px;
+      background:
+        radial-gradient(ellipse at 4% 0%,var(--category-glow),transparent 52%),
+        linear-gradient(145deg,rgba(21,48,91,.97),rgba(5,17,41,.98) 72%);
+      box-shadow: inset 0 1px 0 rgba(255,245,207,.1), inset 0 0 34px var(--category-glow), 0 14px 32px rgba(0,0,0,.24);
       opacity: 0; transform: translateY(12px);
-      animation: guest-group-in .65s cubic-bezier(.2,.7,.25,1) var(--group-delay,0s) both;
+      animation: guest-group-in .55s cubic-bezier(.2,.7,.25,1) var(--group-delay,0s) both;
     }
-    .participant-group h3 {
-      display: flex; align-items: center; gap: 9px; margin: 0 0 7px; padding-bottom: 8px;
-      border-bottom: 1px solid rgba(232,200,100,.22); color: #f4dc91;
-      font: 500 1.18rem var(--serif); letter-spacing: .025em;
+    .guest-category-card[data-role="Blue Bill"] { --category-accent: #86baff; --category-glow: rgba(65,137,240,.18); }
+    .guest-category-card[data-role="Yellow Bill"] { --category-accent: #f3cf70; --category-glow: rgba(228,168,42,.16); }
+    .guest-category-card[data-role="Cake"] { --category-accent: #f2b7d0; --category-glow: rgba(204,91,143,.12); }
+    .guest-category-card[data-role="Treasure & Candle"] { --category-accent: #e8bb73; --category-glow: rgba(208,139,53,.14); }
+    .guest-category-card[data-role="Gift and Shots"] { --category-accent: #b9a6ff; --category-glow: rgba(121,93,219,.15); }
+    .guest-category-card[data-role="Chocolate"] { --category-accent: #d7aa87; --category-glow: rgba(153,87,47,.16); }
+    .guest-category-card details { min-height: 100%; }
+    .guest-category-card summary {
+      display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 12px;
+      min-height: 82px; padding: 16px 18px; color: #fff2c5; cursor: pointer; list-style: none;
     }
-    .participant-icon { width: 22px; height: 22px; color: #f2d57d; }
-    .participant-group h3::before { width: 6px; height: 6px; border-radius: 50%; content: ""; background: linear-gradient(135deg,#fff2b8,#b8901f); box-shadow: 0 0 10px rgba(245,215,122,.55); }
-    .participant-names { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
-    .participant-names li {
-      padding: 5px 9px; border: 1px solid rgba(220,229,248,.13); border-radius: 999px;
-      color: #edf0f7; background: rgba(4,10,27,.3); font: 400 .89rem var(--serif);
-      counter-increment: none;
+    .guest-category-card summary::-webkit-details-marker { display: none; }
+    .guest-category-card summary:focus-visible { outline: 3px solid var(--category-accent); outline-offset: -4px; border-radius: 16px; }
+    .guest-category-icon { display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid color-mix(in srgb,var(--category-accent) 60%,transparent); border-radius: 14px; background: linear-gradient(145deg,var(--category-glow),rgba(4,13,31,.55)); color: var(--category-accent); }
+    .guest-category-icon svg { width: 32px; height: 32px; }
+    .guest-category-heading { min-width: 0; margin: 0; color: #fff0bd; font: 500 clamp(1.25rem,3vw,1.65rem)/1.1 var(--serif); }
+    .guest-category-subtitle { display: block; margin-top: 5px; color: #d7dfed; font: 400 .82rem/1.35 var(--sans); }
+    .guest-category-meta { display: flex; align-items: center; gap: 8px; }
+    .guest-count { padding: 6px 9px; border: 1px solid color-mix(in srgb,var(--category-accent) 48%,transparent); border-radius: 999px; color: #fff5d8; background: rgba(2,10,27,.42); font: 500 .76rem var(--sans); white-space: nowrap; }
+    .guest-collapse-indicator { color: var(--category-accent); font: 500 1.15rem var(--sans); transition: transform .2s; }
+    .guest-category-card details[open] .guest-collapse-indicator { transform: rotate(180deg); }
+    .guest-category-card details[open] summary { border-bottom: 1px solid color-mix(in srgb,var(--category-accent) 28%,transparent); }
+    .guest-category-subtitle-header { padding: 11px 18px 0; color: #d7dfed; font: 400 .82rem/1.45 var(--sans); }
+    .guest-category-list { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0; padding: 16px 18px 20px; list-style: none; }
+    .guest-chip {
+      display: grid; width: 100%; min-width: 0; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 11px;
+      min-height: 58px; padding: 8px 12px; border: 1px solid rgba(214,225,244,.2); border-radius: 14px;
+      color: #f5f7fc; background: linear-gradient(120deg,rgba(5,17,42,.76),rgba(9,27,59,.7));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035); text-align: left; cursor: pointer;
+      transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease;
     }
-    .participants-list .participant-names li::before { display: none; content: none; }
-    .participant-names li.current { border-color: rgba(245,215,122,.56); color: #ffe9a0; }
-    .participants-list li, .dashboard-list li, .waiting-list li { counter-increment: guest-number; display: flex; align-items: baseline; gap: 6px; margin: 6px 0; padding: 11px 13px; border-bottom: 1px solid rgba(232,232,240,.17); color: #ebedf4; font: 400 1.05rem var(--serif); }
-    .participants-list li::before, .dashboard-list li::before, .waiting-list li::before { display: inline-block; flex: none; width: 2.1em; color: #e5c864; content: counter(guest-number, decimal-leading-zero) "."; font: 500 .8rem var(--sans); }
+    .guest-chip:hover { transform: translateY(-2px); border-color: color-mix(in srgb,var(--category-accent) 70%,white); box-shadow: 0 6px 18px rgba(0,0,0,.2),0 0 14px var(--category-glow); }
+    .guest-chip:focus-visible { outline: 3px solid var(--category-accent); outline-offset: 3px; }
+    .guest-chip[aria-pressed="true"] { border-color: var(--category-accent); background: linear-gradient(120deg,var(--category-glow),rgba(8,24,51,.94)); box-shadow: 0 0 0 2px color-mix(in srgb,var(--category-accent) 30%,transparent),0 0 18px var(--category-glow); }
+    .guest-avatar { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid color-mix(in srgb,var(--category-accent) 55%,transparent); border-radius: 50%; color: #fff1bf; background: linear-gradient(145deg,var(--category-glow),rgba(1,9,24,.75)); font: 600 .73rem var(--sans); letter-spacing: .02em; }
+    .guest-chip-copy { display: flex; min-width: 0; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+    .guest-honorific { color: #c5d0e1; font: 400 .77rem var(--sans); }
+    .guest-person-name { overflow-wrap: anywhere; color: #fff; font: 500 .96rem/1.3 var(--sans); }
+    .guest-chip-status { color: #f3d98a; font: 500 .68rem var(--sans); white-space: nowrap; }
+    .guest-chip-status.pending { color: #d0d8e7; }
+    .guest-chip-status.confirmed { color: #a9e2bf; }
+    .guest-empty { grid-column: 1 / -1; padding: 16px; color: #d5deeb; font: 400 .92rem var(--sans); text-align: center; }
+    .guest-selection-status { min-height: 1.4em; margin: 8px auto; color: #f5dfa0; font: 400 .95rem var(--sans); text-align: center; }
+    .waiting-list li { counter-increment: guest-number; display: flex; align-items: baseline; gap: 6px; margin: 6px 0; padding: 11px 13px; border-bottom: 1px solid rgba(232,232,240,.17); color: #ebedf4; font: 400 1.05rem var(--serif); }
+    .waiting-list li::before { display: inline-block; flex: none; width: 2.1em; color: #e5c864; content: counter(guest-number, decimal-leading-zero) "."; font: 500 .8rem var(--sans); }
     .g-name { flex: 1; min-width: 0; }
     .g-role { color: #aeb7c8; font: 300 .8rem var(--sans); letter-spacing: .04em; }
     .g-badge { flex: none; padding: 2px 9px; border: 1px solid rgba(245,215,122,.6); border-radius: 999px; color: #ffe28a; font: 500 .68rem var(--sans); letter-spacing: .08em; text-transform: uppercase; }
@@ -409,11 +445,8 @@
     .dashboard-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 12px; }
     .dashboard-total { margin: 0; font-size: 1.35rem; }
     .refresh-button { width: 135px; min-height: 42px; }
-    .dashboard-group { margin: 16px 0; padding: 16px 18px; border: 1px solid rgba(222,192,100,.42); border-radius: 14px; background: linear-gradient(125deg,#152850,#060d20); }
-    .dashboard-group h2 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; color: #f3dc91; font: 500 1.5rem var(--serif); }
-    .dashboard-group h2 small { color: #cbd2e0; font: 400 .85rem var(--sans); }
-    .dashboard-group .dashboard-list { margin: 8px auto 0; }
-    .dashboard-group .dashboard-list li { padding: 7px 4px; }
+    .dashboard-group { min-height: 100%; }
+    .dashboard-group .guest-category-list { padding-top: 14px; }
     .waiting-section { margin: 28px 0 10px; padding: 18px; border: 1px solid rgba(191,199,215,.22); border-radius: 14px; background: rgba(5,11,30,.5); }
     .waiting-section h2 { margin: 0; color: #c3cad8; font: 400 1.9rem var(--serif); }
     .waiting-count { margin: 4px 0; color: #aeb7c8; font-size: .9rem; }
@@ -484,7 +517,13 @@
       .dashboard-total { max-width: 60%; font-size: 1.13rem; }
       .refresh-button { width: 112px; }
       .participants-content, .dashboard-content { width: calc(100% - 38px); }
-      .participants-list li, .dashboard-list li, .waiting-list li { font-size: .98rem; flex-wrap: wrap; }
+      .waiting-list li { font-size: .98rem; flex-wrap: wrap; }
+      .guest-category-card summary { grid-template-columns: auto minmax(0,1fr) auto; gap: 9px; min-height: 74px; padding: 12px; }
+      .guest-category-icon { width: 42px; height: 42px; }
+      .guest-category-icon svg { width: 29px; height: 29px; }
+      .guest-count { padding: 5px 7px; font-size: .68rem; }
+      .guest-category-list { gap: 12px; padding: 12px; }
+      .guest-chip { grid-template-columns: 36px minmax(0,1fr) auto; gap: 9px; padding: 8px 10px; }
     }
     @media (max-width: 420px) {
       .stack { padding-right: 12px; padding-left: 12px; }
@@ -495,6 +534,10 @@
       .suite-header-note { max-width: 190px; }
       .gallery { gap: 16px 10px; padding-right: 4px; padding-left: 4px; }
       .flourish { width: 60%; }
+    }
+    @media (min-width: 700px) {
+      .participants-list, .dashboard-groups { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .guest-category-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
     }
     @media (max-width: 359px) {
       .eyebrow { letter-spacing: .14em; }
@@ -508,7 +551,7 @@
       .bokeh-orb { animation: none !important; opacity: .18; transform: none; }
       .star-dot { animation: none !important; opacity: .35; }
       .shooting-star { display: none; }
-      .participant-group { animation: none !important; opacity: 1; transform: none; }
+      .guest-category-card { animation: none !important; opacity: 1; transform: none; }
       .starfield { transform: none !important; transition: none !important; }
     }
 
@@ -549,8 +592,6 @@
         linear-gradient(160deg, rgba(15,48,104,.92), rgba(5,20,52,.95));
     }
     .host-dashboard, .participants-overlay { background: linear-gradient(180deg, #0a2a5e, #041433); }
-    .dashboard-group { background: linear-gradient(125deg, #0f3068, #051a40); }
-    .participant-group { background: linear-gradient(145deg, rgba(15,48,104,.8), rgba(5,20,52,.8)); }
     .portrait-inner { background: radial-gradient(ellipse at 50% 33%, rgba(111,143,196,.5), transparent 55%), linear-gradient(145deg, #0f3068, #051a40); }
     .gallery-photo .photo-placeholder { background: radial-gradient(ellipse at 50% 30%, rgba(111,143,196,.45), transparent 65%), linear-gradient(145deg, #0f3068, #051a40); }
 
@@ -951,6 +992,7 @@
         </div>
         <label class="sr-only" for="dashboard-search">Search guests</label>
         <input class="dashboard-search" id="dashboard-search" type="search" placeholder="Search guests by name or role">
+        <p class="guest-selection-status" id="dashboard-selection-status" role="status" aria-live="polite"></p>
         <div class="dashboard-groups" id="dashboard-groups"></div>
         <section class="waiting-section" aria-labelledby="waiting-heading">
           <h2 id="waiting-heading">Waiting for response</h2>
@@ -966,6 +1008,9 @@
     <div class="participants-content">
       <p class="eyebrow">Everyone invited</p>
       <h2 class="foil-script" id="participants-heading">The guest list</h2>
+      <label class="sr-only" for="participants-search">Search guests by name or category</label>
+      <input class="guest-list-search" id="participants-search" type="search" placeholder="Search guests or categories">
+      <p class="guest-selection-status" id="participants-selection-status" role="status" aria-live="polite"></p>
       <div class="participants-list" id="participants-list"></div>
     </div>
   </section>
@@ -1711,34 +1756,144 @@
       }
       return item;
     }
+    let selectedParticipant = "";
+    function setSelectedParticipant(key, status) {
+      selectedParticipant = selectedParticipant === key ? "" : key;
+      document.querySelectorAll("[data-guest-key]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.guestKey === selectedParticipant));
+      });
+      const selectedButton = selectedParticipant
+        ? Array.from(document.querySelectorAll("[data-guest-key]")).find((button) => button.dataset.guestKey === selectedParticipant)
+        : null;
+      status.textContent = selectedButton
+        ? `${selectedButton.dataset.guestName} selected · ${selectedButton.dataset.guestRole}.`
+        : "No guest selected.";
+    }
+    function guestInitials(name) {
+      const nameWithoutHonorific = name.replace(/^(?:tita|tito|ninang|ninong)\s+/i, "");
+      return nameWithoutHonorific.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+    }
+    function makeGuestCategoryCard(role, guests, options = {}) {
+      const definition = CONFIG.roleDescriptions[role] || {};
+      const title = definition.listTitle || role;
+      const group = document.createElement("section");
+      group.className = `guest-category-card ${options.dashboard ? "dashboard-group" : "participant-group"}`;
+      group.dataset.role = options.roleKey || role;
+      group.style.setProperty("--group-delay", `${options.index * 75}ms`);
+
+      const details = document.createElement("details");
+      details.open = matchMedia("(min-width: 700px)").matches;
+      const summary = document.createElement("summary");
+      const iconHolder = document.createElement("span");
+      iconHolder.className = "guest-category-icon";
+      iconHolder.innerHTML = iconFor(role);
+      iconHolder.firstElementChild.setAttribute("class", "participant-icon");
+
+      const heading = document.createElement("h3");
+      heading.className = "guest-category-heading";
+      heading.append(document.createTextNode(title));
+      const subtitle = document.createElement("span");
+      subtitle.className = "guest-category-subtitle";
+      if (options.dashboard) {
+        const confirmedCount = guests.filter((guest) => guest.confirmed).length;
+        subtitle.textContent = `${confirmedCount} confirmed · ${guests.length - confirmedCount} awaiting reply`;
+      } else {
+        subtitle.textContent = `A little list of Nico's ${title.toLowerCase()} guests`;
+      }
+      heading.append(subtitle);
+
+      const meta = document.createElement("span");
+      meta.className = "guest-category-meta";
+      const count = document.createElement("span");
+      count.className = "guest-count";
+      count.textContent = `${guests.length} guests`;
+      const indicator = document.createElement("span");
+      indicator.className = "guest-collapse-indicator";
+      indicator.setAttribute("aria-hidden", "true");
+      indicator.textContent = "⌄";
+      meta.append(count, indicator);
+      summary.append(iconHolder, heading, meta);
+
+      const names = document.createElement("ul");
+      names.className = "guest-category-list";
+      guests.forEach((guest) => {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "guest-chip";
+        const key = normalizeName(guest.name);
+        button.dataset.guestKey = key;
+        button.dataset.guestName = guest.name;
+        button.dataset.guestRole = title;
+        button.setAttribute("aria-pressed", String(key === selectedParticipant));
+        button.setAttribute("aria-label", `${guest.name}${options.dashboard ? guest.confirmed ? ", coming" : ", awaiting reply" : ""}`);
+        const avatar = document.createElement("span");
+        avatar.className = "guest-avatar";
+        avatar.setAttribute("aria-hidden", "true");
+        avatar.textContent = guestInitials(guest.name);
+        const copy = document.createElement("span");
+        copy.className = "guest-chip-copy";
+        const honorific = guest.name.match(/^(Tita|Tito|Ninang|Ninong)\s+(.+)$/i);
+        if (honorific) {
+          const prefix = document.createElement("span");
+          prefix.className = "guest-honorific";
+          prefix.textContent = honorific[1];
+          copy.append(prefix);
+        }
+        const actualName = document.createElement("span");
+        actualName.className = "guest-person-name";
+        actualName.textContent = honorific ? honorific[2] : guest.name;
+        copy.append(actualName);
+        button.append(avatar, copy);
+        if (options.dashboard) {
+          const status = document.createElement("span");
+          status.className = `guest-chip-status ${guest.confirmed ? "confirmed" : "pending"}`;
+          status.textContent = guest.confirmed ? "Coming" : "Pending";
+          button.append(status);
+        }
+        button.addEventListener("click", () => setSelectedParticipant(key, options.selectionStatus));
+        item.append(button);
+        names.append(item);
+      });
+
+      if (!guests.length) {
+        const empty = document.createElement("li");
+        empty.className = "guest-empty";
+        empty.textContent = options.dashboard ? "No confirmed guests yet." : "No guests in this category.";
+        names.append(empty);
+      }
+      details.append(summary, names);
+      group.append(details);
+      return group;
+    }
     function loadParticipants() {
       const list = $("participants-list");
       list.replaceChildren();
+      const search = normalizeName($("participants-search").value);
       Object.keys(CONFIG.roleDescriptions).forEach((role, index) => {
-        const group = document.createElement("section");
-        group.className = "participant-group";
-        group.style.setProperty("--group-delay", `${index * 75}ms`);
-        const heading = document.createElement("h3");
-        const icon = document.createElement("span");
-        icon.innerHTML = iconFor(role);
-        icon.firstElementChild.setAttribute("class", "participant-icon");
-        heading.append(icon.firstElementChild, document.createTextNode(role));
-        const names = document.createElement("ul");
-        names.className = "participant-names";
-        CONFIG.guests.filter((guest) => guest.role === role).forEach((guest) => {
-          const item = document.createElement("li");
-          item.textContent = guest.name;
-          if (activeGuest && normalizeName(guest.name) === normalizeName(activeGuest.name)) item.classList.add("current");
-          names.append(item);
+        const categoryMatches = Boolean(search) && normalizeName(`${role} ${CONFIG.roleDescriptions[role].listTitle || ""}`).includes(search);
+        const roleGuests = CONFIG.guests.filter((guest) => guest.role === role);
+        const visible = !search || categoryMatches
+          ? roleGuests
+          : roleGuests.filter((guest) => normalizeName(guest.name).includes(search));
+        const group = makeGuestCategoryCard(role, visible, {
+          index,
+          selectionStatus: $("participants-selection-status")
         });
-        group.append(heading, names);
+        group.hidden = Boolean(search) && !visible.length && !categoryMatches;
         list.append(group);
       });
+      const selectedGuest = CONFIG.guests.find((guest) => normalizeName(guest.name) === selectedParticipant);
+      $("participants-selection-status").textContent = selectedGuest
+        ? `${selectedGuest.name} selected · ${(CONFIG.roleDescriptions[selectedGuest.role] || {}).listTitle || selectedGuest.role}.`
+        : "No guest selected.";
     }
+    $("participants-search").addEventListener("input", loadParticipants);
     let participantReturnFocus = null;
     function openParticipants() {
       if (!activeGuest || !CONFIG.showParticipantsToGuests) return;
       participantReturnFocus = participantsButton;
+      if (!selectedParticipant) selectedParticipant = normalizeName(activeGuest.name);
       loadParticipants();
       participantsOverlay.hidden = false;
       participantsOverlay.scrollTop = 0;
@@ -1757,30 +1912,25 @@
     function renderDashboard() {
       const book = buildGuestBook();
       const search = normalizeName($("dashboard-search").value);
-      const matches = (guest) => !search || normalizeName(`${guest.name} ${guest.role || ""}`).includes(search);
+      const matches = (guest) => !search || normalizeName(guest.name).includes(search);
       const confirmed = book.filter((guest) => guest.confirmed);
       $("dashboard-total").textContent = `${confirmed.length} of ${book.length} confirmed`;
       const holder = $("dashboard-groups");
       holder.replaceChildren();
       const roles = Object.keys(CONFIG.roleDescriptions);
-      const groups = roles.map((role) => ({ title: CONFIG.roleDescriptions[role].listTitle || role, guests: confirmed.filter((guest) => guest.role === role) }));
-      const others = confirmed.filter((guest) => !CONFIG.roleDescriptions[guest.role]);
-      if (others.length) groups.push({ title: "Other guests", guests: others });
+      const groups = roles.map((role) => ({ role, title: CONFIG.roleDescriptions[role].listTitle || role, guests: book.filter((guest) => guest.role === role) }));
+      const others = book.filter((guest) => !CONFIG.roleDescriptions[guest.role]);
+      if (others.length) groups.push({ role: "Other guests", title: "Other guests", guests: others });
       groups.forEach((group) => {
-        const visible = group.guests.filter(matches);
-        const section = document.createElement("section");
-        section.className = "dashboard-group";
+        const categoryMatches = Boolean(search) && normalizeName(`${group.role} ${group.title}`).includes(search);
+        const visible = !search || categoryMatches ? group.guests : group.guests.filter(matches);
+        const section = makeGuestCategoryCard(group.title, visible, {
+          dashboard: true,
+          roleKey: group.role,
+          index: roles.indexOf(group.role),
+          selectionStatus: $("dashboard-selection-status")
+        });
         section.hidden = Boolean(search) && !visible.length;
-        const heading = document.createElement("h2");
-        const title = document.createElement("span");
-        title.textContent = group.title;
-        const total = document.createElement("small");
-        total.textContent = `${group.guests.length} confirmed`;
-        heading.append(title, total);
-        const list = document.createElement("ol");
-        list.className = "dashboard-list";
-        visible.forEach((guest) => list.append(makeGuestRow(guest, false)));
-        section.append(heading, list);
         holder.append(section);
       });
       const waiting = book.filter((guest) => !guest.confirmed);
