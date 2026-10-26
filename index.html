@@ -247,7 +247,6 @@
     .hero-date b { display: inline-block; }
     .hero-date span:first-child { text-align: left; }
     .hero-date span:last-child { text-align: right; }
-    .hero-when { margin: 0; color: #e9e7ee; font: 400 1.15rem var(--serif); letter-spacing: .06em; opacity: 0; transform: translateY(12px); }
     .countdown {
       display: flex; justify-content: center; gap: clamp(10px, 4vw, 24px);
       margin: 14px auto 4px; color: #f4e4b5; opacity: 0; transform: translateY(12px);
@@ -264,6 +263,7 @@
     .countdown-ended { margin: 12px 0 4px; color: #f3d98a; font: 500 .76rem var(--sans); letter-spacing: .15em; text-transform: uppercase; }
     .gate-form .countdown-ended { text-align: center; }
     .hero-venue { margin: 4px 0 var(--sp-3); color: #c9cfdd; font: 300 .95rem var(--sans); letter-spacing: .08em; opacity: 0; transform: translateY(12px); }
+    .hero-address { margin: -10px 0 16px; color: #c9cfdd; font: 300 .82rem/1.5 var(--sans); letter-spacing: .035em; opacity: 0; transform: translateY(12px); }
     .main-card.is-in .eyebrow { animation: hero-rise .6s ease .1s both; }
     .main-card.is-in .invite-name { animation: hero-rise .6s ease .3s both; }
     .main-card.is-in h1 { animation: number-drop .8s cubic-bezier(.16,.76,.28,1) .6s both; }
@@ -271,8 +271,8 @@
     .main-card.is-in .host-script { animation: hero-rise .8s ease 1.3s both; }
     .main-card.is-in .hero-date { animation: hero-rise .6s ease 1.9s both; }
     .main-card.is-in .hero-date::before, .main-card.is-in .hero-date::after { animation: divider-draw .7s ease 2.1s forwards; }
-    .main-card.is-in .hero-when { animation: hero-rise .6s ease 2.2s both; }
     .main-card.is-in .hero-venue { animation: hero-rise .6s ease 2.35s both; }
+    .main-card.is-in .hero-address { animation: hero-rise .6s ease 2.42s both; }
     .main-card.is-in .portrait-frame, .main-card.is-in .portrait-note { animation: hero-rise .6s ease 2.5s both; }
     .portrait-frame {
       position: relative; width: clamp(140px, 40vw, 180px); aspect-ratio: 130 / 158; margin: 0 auto; padding: 5px;
@@ -320,8 +320,7 @@
       box-shadow: 0 14px 34px rgba(0,0,0,.42), inset 0 0 0 4px rgba(255,255,255,.35);
     }
     .details-card .eyebrow { color: #7a5c14; text-align: center; }
-    .script-heading { margin: 0 0 var(--sp-3); color: #17233c; font: 400 clamp(2.6rem, 10vw, 3.4rem)/.95 var(--script); text-align: center; }
-    .detail-title { margin: var(--sp-3) 0 var(--sp-1); color: #182440; font: 600 1.25rem var(--serif); text-align: center; }
+    .attire-heading { margin: 0 0 14px; color: #17233c; font: 500 clamp(1.35rem, 2vw, 1.65rem)/1.25 var(--serif); letter-spacing: .04em; text-align: center; }
     .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 8px 4px; margin: var(--sp-2) auto 0; }
     .swatch { position: relative; width: 32px; height: 32px; margin: 0 auto 28px; border: 1px solid rgba(27,35,54,.38); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,.14), inset 0 0 0 2px rgba(255,255,255,.24); }
     .swatch::after { position: absolute; top: 38px; left: 50%; width: max-content; content: attr(aria-label); color: #364059; font-size: .78rem; transform: translateX(-50%); }
@@ -329,6 +328,12 @@
     .detail-divider { width: 65%; height: 1px; margin: var(--sp-3) auto; background: linear-gradient(90deg, transparent, #9e7d2e, transparent); }
     .navigate-name { margin: 5px 0 0; color: #14213d; font: 600 1.3rem var(--serif); text-align: center; }
     .navigate-address { margin: 1px 0 9px; color: #4c5362; font-size: .95rem; text-align: center; }
+    .event-time { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 auto 16px; color: #26314a; }
+    .event-time-icon { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border: 1px solid rgba(158,125,46,.68); border-radius: 50%; color: #8a6825; }
+    .event-time-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+    .event-time-copy { display: grid; gap: 1px; }
+    .event-time-copy small { color: #6b634f; font-size: .68rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+    .event-time-copy strong { color: #14213d; font: 600 1.12rem/1.2 var(--serif); }
     .map-link { display: flex; width: fit-content; min-height: 46px; align-items: center; margin: var(--sp-1) auto 0; padding: 10px 22px; border: 1px solid #9e7d2e; border-radius: 999px; color: #544216; font-size: .8rem; font-weight: 600; letter-spacing: .14em; text-decoration: none; text-transform: uppercase; transition: background .3s, transform .3s; }
     .map-link:hover { background: rgba(158,125,46,.14); transform: translateY(-2px); }
 
@@ -346,6 +351,7 @@
       transform: translate(-50%, -50%) scale(var(--reaction-scale, 1));
       transform-origin: center; animation: reaction-appear .35s ease-out both;
     }
+    .rsvp-reaction.is-video { aspect-ratio: 16 / 9; }
     .rsvp-reaction img, .rsvp-reaction video {
       display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 8px;
     }
@@ -457,7 +463,7 @@
     .waiting-list li { color: #aeb5c3; }
     .site-footer { position: relative; z-index: 1; padding: var(--sp-3) var(--sp-2) var(--sp-4); color: #9098ad; font-size: .8rem; line-height: 1.5; letter-spacing: .1em; text-align: center; }
     .site-footer span { color: #f1d477; }
-    .music-toggle { position: fixed; z-index: 40; right: 12px; bottom: 12px; display: grid; width: 43px; height: 43px; place-items: center; border: 1px solid rgba(245,215,122,.64); border-radius: 50%; background: rgba(5,11,30,.93); color: var(--gold-hi); cursor: pointer; }
+    .music-toggle { position: fixed; z-index: 40; right: 12px; bottom: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(245,215,122,.64); border-radius: 50%; background: rgba(5,11,30,.93); color: var(--gold-hi); cursor: pointer; }
     .music-toggle:disabled { display: none; }
     .music-toggle svg { width: 18px; height: 18px; }
 
@@ -555,7 +561,7 @@
     @media (max-height: 640px) and (orientation: landscape) { .gate { align-items: start; } }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-      .reveal, .main-card h1, .celebrate-copy, .main-card .eyebrow, .main-card .invite-name, .host-script, .hero-date, .hero-when, .countdown, .countdown-ended, .hero-venue, .portrait-frame, .portrait-note { opacity: 1; transform: none; }
+      .reveal, .main-card h1, .celebrate-copy, .main-card .eyebrow, .main-card .invite-name, .host-script, .hero-date, .countdown, .countdown-ended, .hero-venue, .hero-address, .portrait-frame, .portrait-note { opacity: 1; transform: none; }
       .bokeh-orb { animation: none !important; opacity: .18; transform: none; }
       .star-dot { animation: none !important; opacity: .35; }
       .shooting-star { display: none; }
@@ -665,7 +671,7 @@
     .hero-date span { min-width: 0; padding: 0 6px; text-align: center; }
     .hero-date span:first-child { text-align: left; }
     .hero-date span:last-child { text-align: right; }
-    .hero-date b, .hero-date small, .hero-when, .hero-venue, .navigate-name, .navigate-address, .dress-copy, .personal-message { overflow-wrap: anywhere; }
+    .hero-date b, .hero-date small, .hero-venue, .hero-address, .navigate-name, .navigate-address, .dress-copy, .personal-message { overflow-wrap: anywhere; }
     .personal-role { flex-wrap: wrap; text-align: center; }
     .photo-placeholder { overflow: hidden; }
     .photo-placeholder span { font-size: clamp(.58rem, 2.6vw, .72rem); }
@@ -821,8 +827,7 @@
     .hero-date .hero-date-icon { display: grid; width: 36px; height: 36px; grid-row: span 2; place-items: center; border: 1px solid rgba(214,170,80,.72); border-radius: 50%; color: #edc875; }
     .hero-date-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
     .hero-date small { margin: 0 0 2px; font-size: .62rem; }
-    .hero-when, .hero-venue { text-align: left; }
-    .hero-when { margin: 10px 0 0; }
+    .hero-venue, .hero-address { text-align: left; }
     .hero-venue { margin: 3px 0 20px; font-size: .87rem; }
     .hero-rsvp-link {
       display: inline-flex; min-width: 136px; min-height: 46px; align-items: center; justify-content: center; gap: 14px;
@@ -849,7 +854,6 @@
     @media (min-width: 901px) {
       .main-card .host-script { margin-bottom: 8px; }
       .hero-date { margin: 18px 0 12px; }
-      .hero-when { margin-top: 6px; }
       .hero-venue { margin-bottom: 14px; }
       .hero-presence { margin-top: 14px; }
     }
@@ -877,7 +881,6 @@
       .hero-date-icon svg { width: 16px; height: 16px; }
       .hero-date small { font-size: .52rem; letter-spacing: .09em; }
       .hero-date b { font-size: 1.08rem; }
-      .hero-when { font-size: 1.02rem; }
       .hero-venue { font-size: .76rem; }
       .hero-presence { gap: 8px; font-size: .58rem; letter-spacing: .14em; }
       .main-card .portrait-frame { max-width: 310px; }
@@ -1050,7 +1053,7 @@
               <h1 class="gold" id="main-title">21<sup>st</sup></h1>
               <p class="celebrate-copy">celebration of</p>
               <p class="host-script foil-script" id="host-name">Nico</p>
-              <div class="hero-date" aria-label="Event date">
+              <div class="hero-date" aria-label="Event date and time">
                 <span>
                   <span class="hero-date-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16M8 12.5h.01M12 12.5h.01M16 12.5h.01M8 16.5h.01M12 16.5h.01"/></svg></span>
                   <small id="date-weekday">Saturday</small><b id="date-day">[26]</b>
@@ -1060,12 +1063,12 @@
                   <small id="date-month">[October]</small><b id="date-year">[20XX]</b>
                 </span>
                 <span>
-                  <span class="hero-date-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 10c0 5-7 12-7 12S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.2"/></svg></span>
+                  <span class="hero-date-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
                   <small>Time</small><b id="date-clock">[6 PM]</b>
                 </span>
               </div>
-              <p class="hero-when" id="hero-time">[Time onwards]</p>
               <p class="hero-venue" id="hero-venue">[Venue Name] · [City]</p>
+              <p class="hero-address" id="hero-address">[Street, City, Philippines]</p>
               <a class="hero-rsvp-link" href="#rsvp-heading">RSVP <span aria-hidden="true">→</span></a>
               <p class="hero-presence">Your presence will make this day even more special</p>
             </div>
@@ -1105,15 +1108,16 @@
 
         <div class="flourish" aria-hidden="true"><span>✦</span></div>
 
-        <article class="suite-card details-card reveal" aria-labelledby="details-heading">
+        <article class="suite-card details-card reveal" aria-labelledby="attire-heading">
           <div class="card-content">
-            <p class="eyebrow">The evening, in a few details</p>
-            <h2 class="script-heading" id="details-heading">Details</h2>
-            <h3 class="detail-title">Dress Code</h3>
+            <h2 class="attire-heading" id="attire-heading">Casual Attire</h2>
             <div class="swatches" id="swatches" aria-label="Dress code color palette"></div>
             <p class="dress-copy" id="dress-copy">I'd love to see you in navy, gold or silver.</p>
             <div class="detail-divider"></div>
-            <h3 class="detail-title">Navigate</h3>
+            <div class="event-time">
+              <span class="event-time-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+              <span class="event-time-copy"><small>Celebration begins</small><strong id="event-time">4:00 PM</strong></span>
+            </div>
             <p class="navigate-name" id="detail-venue"></p>
             <p class="navigate-address" id="detail-address"></p>
             <a class="map-link" id="map-link" href="#" target="_blank" rel="noopener noreferrer">Open in Maps ↗</a>
@@ -1193,13 +1197,12 @@
         day: "26",
         month: "November",
         year: "2026",
-        dateTime: "3:00 PM onwards",
-        displayTime: "3 PM",
-        countdownTarget: "2026-11-26T15:00:00+08:00", // November 26, 2026 at 3 PM Philippine time.
-        venue: "[Venue Name]",
-        address: "[Street, City, Philippines]",
-        mapLink: "", // Add a Google Maps URL.
-        dressCodeText: "I'd love to see you in navy, gold or silver.",
+        displayTime: "4:00 PM",
+        countdownTarget: "2026-11-26T16:00:00+08:00", // November 26, 2026 at 4 PM Philippine time.
+        venue: "Ericka Resort",
+        address: "Mangcawayan, Vinzons, Camarines Norte",
+        mapLink: "https://www.google.com/maps/search/?api=1&query=Ericka%20Resort%2C%20Mangcawayan%2C%20Vinzons%2C%20Camarines%20Norte",
+        dressCodeText: "Wear what feels comfortable; navy, gold, or silver are always welcome.",
         dressColors: [
           { name: "Navy", color: "#0a2350" },
           { name: "Sapphire", color: "#2c5aa0" },
@@ -1503,8 +1506,9 @@
       $("date-month").textContent = CONFIG.event.month;
       $("date-year").textContent = CONFIG.event.year;
       $("date-clock").textContent = CONFIG.event.displayTime;
-      $("hero-time").textContent = CONFIG.event.dateTime;
       $("hero-venue").textContent = CONFIG.event.venue;
+      $("hero-address").textContent = CONFIG.event.address;
+      $("event-time").textContent = CONFIG.event.displayTime;
       $("detail-venue").textContent = CONFIG.event.venue;
       $("detail-address").textContent = CONFIG.event.address;
       $("dress-copy").textContent = CONFIG.event.dressCodeText;
@@ -2134,6 +2138,7 @@
       card.className = "rsvp-reaction";
       card.style.setProperty("--reaction-scale", String(options.scale || 1));
       const isVideo = /\.mp4(?:$|[?#])/i.test(path);
+      card.classList.toggle("is-video", isVideo);
       let media;
       if (isVideo) {
         media = document.createElement("video");
@@ -2168,7 +2173,7 @@
       const viewportHeight = document.documentElement.clientHeight || innerHeight;
       const margin = 12;
       const cardWidth = Math.min(viewportWidth - margin * 2, viewportWidth * .72, 250);
-      const cardHeight = cardWidth * .75;
+      const cardHeightFor = (item) => cardWidth * (item.isVideo ? 9 / 16 : .75);
       const buttons = [yesButton, noButton]
         .filter((button) => !button.hidden)
         .map((button) => button.getBoundingClientRect())
@@ -2203,7 +2208,7 @@
 
         for (const { item, scale } of ordered) {
           const width = cardWidth * scale;
-          const height = cardHeight * scale;
+          const height = cardHeightFor(item) * scale;
           const maxX = Math.max(margin, viewportWidth - width - margin);
           const maxY = Math.max(margin, viewportHeight - height - margin);
           let position = null;
@@ -2227,9 +2232,10 @@
 
         if (placed) {
           positions.forEach(({ item, x, y, scale }) => {
+            const height = cardHeightFor(item);
             item.card.style.width = `${cardWidth}px`;
             item.card.style.left = `${x + cardWidth * scale / 2}px`;
-            item.card.style.top = `${y + cardHeight * scale / 2}px`;
+            item.card.style.top = `${y + height * scale / 2}px`;
             item.card.style.setProperty("--reaction-scale", String(scale));
           });
         } else {
