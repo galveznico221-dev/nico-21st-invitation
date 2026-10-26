@@ -111,6 +111,10 @@
       background: linear-gradient(105deg, #a77913, #ffe796 24%, #c08d16 39%, #fff2b4 54%, #bf901f 70%, #ffe78a 82%, #9d7314);
       background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
+    .gold, .foil-script {
+      filter: drop-shadow(0 0 5px rgba(245,215,122,.28)) drop-shadow(0 0 14px rgba(201,152,58,.12));
+      animation: golden-text-glow 4.8s ease-in-out infinite alternate;
+    }
     .eyebrow { margin: 0; color: #ebcd78; font-size: .75rem; font-weight: 500; letter-spacing: .22em; line-height: 1.5; text-transform: uppercase; }
 
     /* ---------- Cards ---------- */
@@ -487,6 +491,10 @@
       100% { opacity: 0; transform: translate3d(var(--meteor-dx),var(--meteor-dy),0) rotate(var(--angle,0deg)) scaleX(1); }
     }
     @keyframes guest-group-in { to { opacity: 1; transform: translateY(0); } }
+    @keyframes golden-text-glow {
+      from { filter: drop-shadow(0 0 4px rgba(245,215,122,.2)) drop-shadow(0 0 11px rgba(201,152,58,.08)); }
+      to { filter: drop-shadow(0 0 8px rgba(255,231,138,.45)) drop-shadow(0 0 20px rgba(201,152,58,.2)); }
+    }
     @keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes number-drop { from { opacity: 0; transform: translateY(-22px) scale(.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes divider-draw { to { transform: scaleX(1); } }
@@ -1262,13 +1270,11 @@
     function buildGuestBook() {
       const accepted = readAccepted();
       const acceptedKeys = new Set(accepted.map((entry) => normalizeName(entry.name)));
-      const book = CONFIG.guests.map((guest) => ({ name: guest.name, role: guest.role, confirmed: acceptedKeys.has(normalizeName(guest.name)) }));
-      accepted.forEach((entry) => {
-        if (!book.some((item) => normalizeName(item.name) === normalizeName(entry.name))) {
-          book.push({ name: entry.name, role: entry.role, confirmed: true });
-        }
-      });
-      return book;
+      return CONFIG.guests.map((guest) => ({
+        name: guest.name,
+        role: guest.role,
+        confirmed: acceptedKeys.has(normalizeName(guest.name))
+      }));
     }
 
     function getGuest(value) {
@@ -1919,8 +1925,6 @@
       holder.replaceChildren();
       const roles = Object.keys(CONFIG.roleDescriptions);
       const groups = roles.map((role) => ({ role, title: CONFIG.roleDescriptions[role].listTitle || role, guests: book.filter((guest) => guest.role === role) }));
-      const others = book.filter((guest) => !CONFIG.roleDescriptions[guest.role]);
-      if (others.length) groups.push({ role: "Other guests", title: "Other guests", guests: others });
       groups.forEach((group) => {
         const categoryMatches = Boolean(search) && normalizeName(`${group.role} ${group.title}`).includes(search);
         const visible = !search || categoryMatches ? group.guests : group.guests.filter(matches);
