@@ -1972,6 +1972,7 @@
     let noClicks = 0;
     const reactionLayer = $("rsvp-reaction-layer");
     const reactionItems = [];
+    const featuredReactionPath = "cry/Download%20(5).mp4";
     let celebrationActive = false;
     document.body.append(reactionLayer);
     noButton.tabIndex = 0;
@@ -2002,7 +2003,7 @@
       media.src = path;
       card.append(media);
       reactionLayer.append(card);
-      const item = { card, media, path, isVideo, baseScale: options.scale || 1 };
+      const item = { card, media, path, isVideo, baseScale: options.scale || 1, keepFullSize: path === featuredReactionPath };
       reactionItems.push(item);
       if (isVideo) {
         const playPromise = media.play();
@@ -2041,7 +2042,7 @@
       for (let layoutAttempt = 0; layoutAttempt < 24 && !placed; layoutAttempt++) {
         const ordered = reactionItems.map((item, index) => ({
           item,
-          scale: item.baseScale * Math.pow(.82, reactionItems.length - index - 1) * scaleFactor
+          scale: item.keepFullSize ? item.baseScale : item.baseScale * Math.pow(.82, reactionItems.length - index - 1) * scaleFactor
         })).sort((a, b) => b.scale - a.scale);
         const occupied = buttons.map((rect) => ({
           left: rect.left - 3, top: rect.top - 3, right: rect.right + 3, bottom: rect.bottom + 3
