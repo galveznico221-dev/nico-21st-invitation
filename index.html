@@ -838,7 +838,7 @@
     }
     .hero-presence::before, .hero-presence::after { flex: 1; min-width: 20px; height: 1px; content: ""; background: linear-gradient(90deg, transparent, rgba(218,184,105,.78)); }
     .hero-presence::after { transform: scaleX(-1); }
-    .hero-visual { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) 94px; align-items: center; gap: 18px; }
+    .hero-visual { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center; }
     .main-card .portrait-frame {
       width: 100%; max-width: 390px; aspect-ratio: 0.66; margin: 0; padding: 5px; border-radius: 16px; clip-path: none;
       box-shadow: 0 18px 46px rgba(0,0,0,.45), 0 0 28px rgba(201,152,58,.11);
@@ -846,11 +846,6 @@
     .main-card .portrait-inner { border-radius: 11px; }
     .main-card .photo-img { object-position: center 35%; }
     .main-card .portrait-note { display: none; }
-    .hero-side-note {
-      margin: 0; color: #e4c474; font: italic 400 clamp(1.4rem, 2.3vw, 2rem)/1.35 var(--script);
-      text-align: center; transform: rotate(-8deg);
-    }
-    .hero-side-note::after { display: block; width: 44px; height: 1px; margin: 14px auto 0; content: ""; background: #c79c4d; transform: rotate(-12deg); }
     @media (min-width: 901px) {
       .main-card .host-script { margin-bottom: 8px; }
       .hero-date { margin: 18px 0 12px; }
@@ -863,9 +858,8 @@
       .main-card { min-height: auto; padding: 30px 0 36px; }
       .main-card .card-content { grid-template-columns: minmax(0,1fr); gap: 34px; }
       .hero-copy { order: 1; }
-      .hero-visual { width: min(100%, 470px); grid-template-columns: minmax(0, 1fr) 76px; gap: 12px; margin: 0 auto; order: 2; }
+      .hero-visual { width: min(100%, 470px); margin: 0 auto; order: 2; }
       .main-card .portrait-frame { max-width: 360px; }
-      .hero-side-note { font-size: clamp(1.25rem, 5vw, 1.8rem); }
       .hero-presence { margin-top: 20px; }
     }
     @media (max-width: 500px) {
@@ -886,9 +880,7 @@
       .hero-when { font-size: 1.02rem; }
       .hero-venue { font-size: .76rem; }
       .hero-presence { gap: 8px; font-size: .58rem; letter-spacing: .14em; }
-      .hero-visual { grid-template-columns: minmax(0,1fr) 63px; gap: 8px; }
       .main-card .portrait-frame { max-width: 310px; }
-      .hero-side-note { font-size: 1.2rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       .hero-rsvp-link { transition: none; }
@@ -1047,7 +1039,6 @@
                   </div>
                 </div>
               </div>
-              <p class="hero-side-note">Good things are worth celebrating</p>
             </div>
           </div>
         </article>
