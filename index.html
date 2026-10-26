@@ -1445,9 +1445,16 @@
     function getGuest(value) {
       const typed = normalizeName(value);
       if (!typed) return null;
+      const typedParts = typed.split(" ");
+      if (typedParts.length === 1) {
+        const token = typedParts[0];
+        const tokenMatches = CONFIG.guests.filter((guest) => normalizeName(guest.name).split(" ").includes(token));
+        if (tokenMatches.length !== 1) return null;
+        const givenName = normalizeName(tokenMatches[0].name).replace(/^(?:tita|tito|ninang|ninong)\s+/, "").split(" ")[0];
+        return givenName === token ? { ...tokenMatches[0] } : null;
+      }
       const exactMatch = CONFIG.guests.find((guest) => normalizeName(guest.name) === typed);
       if (exactMatch) return { ...exactMatch };
-      const typedParts = typed.split(" ");
       const namePartMatches = CONFIG.guests.filter((guest) => {
         const guestParts = normalizeName(guest.name).split(" ");
         return typedParts.every((part) => guestParts.includes(part));
@@ -1707,7 +1714,7 @@
         resetUnlockButton();
         gateError.textContent = typedName.includes(" ")
           ? "I couldn't find one guest with that exact name. Please check the spelling or message Nico."
-          : "I couldn't find a unique match for that name. Try another part of your name or enter your full name.";
+          : "Please enter your first name. If it's shared, add your middle or last name.";
         guestInput.classList.remove("is-invalid");
         void guestInput.offsetWidth;
         guestInput.classList.add("is-invalid");
