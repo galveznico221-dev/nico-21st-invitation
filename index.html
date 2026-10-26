@@ -1230,7 +1230,7 @@
         { name: "Ninong Jay Hardenero", role: "Blue Bill" },
         { name: "Tito Jojo Galvez", role: "Blue Bill" },
         { name: "Tito Phet Lapore", role: "Blue Bill" },
-        { name: "Tito Laboy Acumin", role: "Blue Bill" },
+        { name: "Tito Laboy Acunin", role: "Blue Bill" },
         { name: "Tita Ethang Sadia", role: "Blue Bill" },
         { name: "Tita Marites Senes", role: "Blue Bill" },
         { name: "Ninong Victor Ilan", role: "Blue Bill" },
@@ -1405,7 +1405,9 @@
     }
 
     /* ---------- Local data storage (accepted guests) ---------- */
-    const STORE_KEY = "nico21-accepted-guests";
+    const STORE_KEY = "nico21-accepted-guests-v2";
+    try { localStorage.removeItem("nico21-accepted-guests"); }
+    catch (error) { console.warn("Could not clear previous local RSVP confirmations.", error); }
     let memoryStore = [];
     function readAccepted() {
       try {
