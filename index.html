@@ -465,6 +465,7 @@
     .site-footer { position: relative; z-index: 1; padding: var(--sp-3) var(--sp-2) var(--sp-4); color: #9098ad; font-size: .8rem; line-height: 1.5; letter-spacing: .1em; text-align: center; }
     .site-footer span { color: #f1d477; }
     .music-toggle { position: fixed; z-index: 40; right: 12px; bottom: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(245,215,122,.64); border-radius: 50%; background: rgba(5,11,30,.93); color: var(--gold-hi); cursor: pointer; }
+    .music-toggle.is-needs-gesture::after { position: absolute; right: 52px; padding: 7px 10px; border: 1px solid rgba(245,215,122,.55); border-radius: 999px; background: rgba(5,11,30,.94); color: #f5d77a; content: "Tap for music"; font: 500 .7rem var(--sans); letter-spacing: .06em; white-space: nowrap; }
     .music-toggle:disabled { display: none; }
     .music-toggle svg { width: 18px; height: 18px; }
 
@@ -1186,7 +1187,7 @@
   <button class="music-toggle" id="music-toggle" type="button" aria-label="Toggle background music" aria-pressed="false" disabled>
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
-  <audio id="background-music" loop preload="auto"></audio>
+  <audio id="background-music" loop preload="auto" playsinline></audio>
 
   <script>
     // EDIT THIS ONE CONFIG BLOCK: host access, event, guests, copy, photos.
@@ -1650,6 +1651,7 @@
 
     $("name-form").addEventListener("submit", (event) => {
       event.preventDefault();
+      void startBackgroundMusic();
       if (unlockPending) return;
       gateError.textContent = "";
       gateError.classList.remove("is-hint");
@@ -2440,38 +2442,53 @@
     });
 
     /* ---------- Music ---------- */
-    let musicGestureHandled = false;
     function setMusicPlayingState(isPlaying) {
       musicButton.setAttribute("aria-pressed", String(isPlaying));
       musicButton.setAttribute("aria-label", isPlaying ? "Turn background music off" : "Turn background music on");
+      musicButton.classList.remove("is-needs-gesture");
     }
+    let musicStartPromise = null;
     async function startBackgroundMusic() {
       if (!CONFIG.music) return;
       if (!music.src) music.src = CONFIG.music;
-      try {
-        await music.play();
+      if (!music.paused) {
         setMusicPlayingState(true);
-      } catch (error) {
-        setMusicPlayingState(false);
-        if (error.name === "NotAllowedError") {
-          console.info("Background music autoplay was blocked; tap the music button to start it.");
-        } else {
-          console.error("Background music could not be played.", error);
+        return;
+      }
+      if (musicStartPromise) return musicStartPromise;
+      musicStartPromise = (async () => {
+        try {
+          await music.play();
+          setMusicPlayingState(true);
+          musicButton.title = "Turn background music off";
+        } catch (error) {
+          setMusicPlayingState(false);
+          if (error.name === "NotAllowedError") {
+            musicButton.classList.add("is-needs-gesture");
+            musicButton.title = "Tap to start background music";
+            console.info("Background music autoplay was blocked; tap the music button or interact with the page to start it.");
+          } else {
+            musicButton.title = "Background music could not start; tap to retry";
+            console.error("Background music could not be played.", error);
+          }
         }
+      })();
+      try {
+        await musicStartPromise;
+      } finally {
+        musicStartPromise = null;
       }
     }
     function stopBackgroundMusic() {
       music.pause();
       setMusicPlayingState(false);
+      musicButton.title = "Turn background music on";
     }
     function handleFirstMusicGesture(event) {
-      if (musicGestureHandled || !CONFIG.music || !event.isTrusted) return;
-      musicGestureHandled = true;
-      document.removeEventListener("pointerdown", handleFirstMusicGesture, true);
-      document.removeEventListener("keydown", handleFirstMusicGesture, true);
+      if (!CONFIG.music || !event.isTrusted || !music.paused) return;
       const target = event.target;
       if (target === musicButton || (target instanceof Node && musicButton.contains(target))) return;
-      if (music.paused) void startBackgroundMusic();
+      void startBackgroundMusic();
     }
     document.addEventListener("pointerdown", handleFirstMusicGesture, true);
     document.addEventListener("keydown", handleFirstMusicGesture, true);
