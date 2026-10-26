@@ -1721,6 +1721,9 @@
       gateError.textContent = "";
       gateError.classList.remove("is-hint");
     });
+    guestInput.addEventListener("focus", () => {
+      void startBackgroundMusic();
+    });
 
     function observeCards() {
       const cards = document.querySelectorAll(".reveal");
