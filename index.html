@@ -1447,8 +1447,12 @@
       if (!typed) return null;
       const exactMatch = CONFIG.guests.find((guest) => normalizeName(guest.name) === typed);
       if (exactMatch) return { ...exactMatch };
-      const firstNameMatches = CONFIG.guests.filter((guest) => normalizeName(guest.name).split(" ")[0] === typed);
-      return firstNameMatches.length === 1 ? { ...firstNameMatches[0] } : null;
+      const typedParts = typed.split(" ");
+      const namePartMatches = CONFIG.guests.filter((guest) => {
+        const guestParts = normalizeName(guest.name).split(" ");
+        return typedParts.every((part) => guestParts.includes(part));
+      });
+      return namePartMatches.length === 1 ? { ...namePartMatches[0] } : null;
     }
     function iconFor(role) {
       const definition = CONFIG.roleDescriptions[role];
@@ -1702,8 +1706,8 @@
       if (!guest) {
         resetUnlockButton();
         gateError.textContent = typedName.includes(" ")
-          ? "Please message Nico for clarification."
-          : "Your name is not on the list. Please message Nico or try to type your full name.";
+          ? "I couldn't find one guest with that exact name. Please check the spelling or message Nico."
+          : "I couldn't find a unique match for that name. Try another part of your name or enter your full name.";
         guestInput.classList.remove("is-invalid");
         void guestInput.offsetWidth;
         guestInput.classList.add("is-invalid");
