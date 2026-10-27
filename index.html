@@ -274,13 +274,16 @@
     .main-card.is-in .hero-date::before, .main-card.is-in .hero-date::after { animation: divider-draw .7s ease 2.1s forwards; }
     .main-card.is-in .hero-venue { animation: hero-rise .6s ease 2.35s both; }
     .main-card.is-in .hero-address { animation: hero-rise .6s ease 2.42s both; }
-    .main-card.is-in .portrait-frame, .main-card.is-in .portrait-note { animation: hero-rise .6s ease 2.5s both; }
+    .main-card.is-in .portrait-note { animation: hero-rise .6s ease 2.5s both; }
     .portrait-frame {
       position: relative; width: clamp(140px, 40vw, 180px); aspect-ratio: 130 / 158; margin: 0 auto; padding: 5px;
       border: 1px solid transparent; opacity: 0;
       clip-path: polygon(9% 0, 91% 0, 100% 10%, 97% 94%, 91% 100%, 9% 100%, 0 92%, 3% 9%);
       background: linear-gradient(130deg, #fff0ac, #9c7117 24%, #ffe891 42%, #b58920 61%, #fff0a5 80%, #8c6313) border-box;
     }
+    @keyframes portrait-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    .main-card.is-in .portrait-frame { animation: hero-rise .6s ease 2.5s both, portrait-float 7s ease-in-out 3.1s infinite; }
+    @media (prefers-reduced-motion: reduce) { .main-card.is-in .portrait-frame { animation: none; opacity: 1; transform: none; } }
     .portrait-inner { position: relative; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(ellipse at 50% 33%, rgba(90,132,196,.5), transparent 55%), linear-gradient(145deg, #172b50, #081128); }
     .portrait-note { margin: var(--sp-1) 0 0; color: #d9d7dc; font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; opacity: 0; }
     .photo-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
