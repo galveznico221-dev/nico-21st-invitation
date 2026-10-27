@@ -1467,6 +1467,21 @@
       }
       remoteAccepted = accepted;
     }
+    async function syncLocalAcceptancesToServer() {
+      const localEntries = readAccepted();
+      let synced = 0;
+      for (const entry of localEntries) {
+        const guest = CONFIG.guests.find((candidate) =>
+          normalizeName(candidate.name) === normalizeName(entry.name) &&
+          candidate.role === entry.role
+        );
+        if (guest && !isAccepted(guest)) {
+          await saveAcceptedToServer(guest);
+          synced++;
+        }
+      }
+      return synced;
+    }
     function readAccepted() {
       try {
         const parsed = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
@@ -1480,6 +1495,11 @@
       catch (error) { console.warn("Could not write to local storage.", error); }
     }
     function isAccepted(guest) {
+      const key = normalizeName(guest.name);
+      const accepted = remoteAccepted || readAccepted();
+      return accepted.some((entry) => normalizeName(entry.name) === key);
+    }
+    function hasLocalAcceptance(guest) {
       const key = normalizeName(guest.name);
       return readAccepted().some((entry) => normalizeName(entry.name) === key);
     }
@@ -1670,14 +1690,31 @@
       }
     }
     function restoreRsvp(guest) {
-      if (isAccepted(guest)) showConfirmedState(guest, false);
-      if (!CONFIG.rsvpApiUrl) return;
-      void refreshAcceptedFromServer().then(() => {
-        if (isAccepted(guest)) showConfirmedState(guest, false);
+      if (!CONFIG.rsvpApiUrl) {
+        if (hasLocalAcceptance(guest)) showConfirmedState(guest, false);
+        return;
+      }
+      const hadLocalAcceptance = hasLocalAcceptance(guest);
+      const originalLabel = yesButton.innerHTML;
+      yesButton.disabled = true;
+      yesButton.textContent = hadLocalAcceptance ? "Syncing your earlier RSVP…" : "Checking your RSVP…";
+      void refreshAcceptedFromServer().then(async () => {
+        if (hadLocalAcceptance && !isAccepted(guest)) await saveAcceptedToServer(guest);
+        if (isAccepted(guest)) {
+          showConfirmedState(guest, false);
+          return;
+        }
+        yesButton.disabled = false;
+        yesButton.innerHTML = originalLabel;
       }).catch((error) => {
         console.error("Could not check the shared RSVP status.", error);
-        confirmation.textContent = "I couldn't check your saved RSVP right now. Please try again later.";
+        confirmation.textContent = hadLocalAcceptance
+          ? "I couldn't sync your earlier RSVP. Press Yes to try again."
+          : "I couldn't check your saved RSVP right now. Please try again.";
         confirmation.hidden = false;
+        yesButton.disabled = false;
+        yesButton.innerHTML = hadLocalAcceptance ? "Sync my RSVP" : originalLabel;
+        if (hadLocalAcceptance) noButton.hidden = true;
       });
     }
 
@@ -2210,7 +2247,10 @@
       status.textContent = "Syncing shared confirmations…";
       try {
         await refreshAcceptedFromServer();
-        status.textContent = `Shared RSVP list updated at ${new Date().toLocaleTimeString()}.`;
+        const synced = await syncLocalAcceptancesToServer();
+        status.textContent = synced
+          ? `Synced ${synced} earlier confirmation${synced === 1 ? "" : "s"} · updated at ${new Date().toLocaleTimeString()}.`
+          : `Shared RSVP list updated at ${new Date().toLocaleTimeString()}.`;
         renderDashboard();
       } catch (error) {
         console.error("Could not refresh the shared RSVP list.", error);
