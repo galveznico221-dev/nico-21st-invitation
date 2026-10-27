@@ -1168,6 +1168,7 @@
           <p class="dashboard-total" id="dashboard-total" aria-live="polite"></p>
           <button class="foil-button refresh-button" id="refresh-dashboard" type="button">Refresh</button>
         </div>
+        <p class="async-state" id="dashboard-sync-status" role="status" aria-live="polite"></p>
         <label class="sr-only" for="dashboard-search">Search guests</label>
         <input class="dashboard-search" id="dashboard-search" type="search" placeholder="Search guests by name or role">
         <p class="guest-selection-status" id="dashboard-selection-status" role="status" aria-live="polite"></p>
@@ -1202,6 +1203,7 @@
     const CONFIG = {
       hostName: "Nico",
       hostPin: "", // Optional client-side PIN prompt for the host view.
+      rsvpApiUrl: "https://script.google.com/macros/s/AKfycbxS40w4_AkJ5-8avF_ptEOfXbxbksxrcFgSyQoL8C_WefZg3qjyBq0Bg-EjtlhWLEQW1g/exec",
       showParticipantsToGuests: true,
       event: {
         weekday: "Thursday",
@@ -1416,6 +1418,55 @@
     try { localStorage.removeItem("nico21-accepted-guests"); }
     catch (error) { console.warn("Could not clear previous local RSVP confirmations.", error); }
     let memoryStore = [];
+    let remoteAccepted = null;
+    let rsvpApiRequestId = 0;
+    function requestRsvpApi(parameters) {
+      if (!CONFIG.rsvpApiUrl) {
+        return Promise.reject(new Error("Shared RSVP sync is not set up yet. Please try again later."));
+      }
+      return new Promise((resolve, reject) => {
+        const callbackName = `__nicoRsvpCallback${++rsvpApiRequestId}`;
+        const script = document.createElement("script");
+        const url = new URL(CONFIG.rsvpApiUrl);
+        const timeout = window.setTimeout(() => finish(new Error("The shared RSVP service did not respond. Please try again.")), 15000);
+        const finish = (error, result) => {
+          window.clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+          if (error) reject(error);
+          else resolve(result);
+        };
+        url.searchParams.set("callback", callbackName);
+        Object.entries(parameters).forEach(([key, value]) => url.searchParams.set(key, value));
+        window[callbackName] = (result) => {
+          if (result && result.error) finish(new Error(result.error));
+          else finish(null, result);
+        };
+        script.onerror = () => finish(new Error("Could not reach the shared RSVP service. Please try again."));
+        script.src = url.toString();
+        document.head.append(script);
+      });
+    }
+    async function refreshAcceptedFromServer() {
+      const result = await requestRsvpApi({ action: "accepted" });
+      if (!result || !Array.isArray(result.accepted)) {
+        throw new Error("The shared RSVP service returned an invalid guest list.");
+      }
+      remoteAccepted = result.accepted;
+      return remoteAccepted;
+    }
+    async function saveAcceptedToServer(guest) {
+      const result = await requestRsvpApi({ action: "confirm", name: guest.name, role: guest.role });
+      if (!result || result.ok !== true) {
+        throw new Error("The shared RSVP service did not save your response.");
+      }
+      const accepted = Array.isArray(remoteAccepted) ? remoteAccepted.slice() : [];
+      const key = normalizeName(guest.name);
+      if (!accepted.some((entry) => normalizeName(entry.name) === key)) {
+        accepted.push({ name: guest.name, role: guest.role, status: "yes" });
+      }
+      remoteAccepted = accepted;
+    }
     function readAccepted() {
       try {
         const parsed = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
@@ -1440,7 +1491,7 @@
     }
     // Everyone invited, flagged with whether they have accepted on this device.
     function buildGuestBook() {
-      const accepted = readAccepted();
+      const accepted = remoteAccepted || readAccepted();
       const acceptedKeys = new Set(accepted.map((entry) => normalizeName(entry.name)));
       return CONFIG.guests.map((guest) => ({
         name: guest.name,
@@ -1618,7 +1669,17 @@
         participantsButton.classList.add("is-pop");
       }
     }
-    function restoreRsvp(guest) { if (isAccepted(guest)) showConfirmedState(guest, false); }
+    function restoreRsvp(guest) {
+      if (isAccepted(guest)) showConfirmedState(guest, false);
+      if (!CONFIG.rsvpApiUrl) return;
+      void refreshAcceptedFromServer().then(() => {
+        if (isAccepted(guest)) showConfirmedState(guest, false);
+      }).catch((error) => {
+        console.error("Could not check the shared RSVP status.", error);
+        confirmation.textContent = "I couldn't check your saved RSVP right now. Please try again later.";
+        confirmation.hidden = false;
+      });
+    }
 
     function scatterGateGlitter(origin) {
       if (reduceMotion()) return;
@@ -1667,8 +1728,8 @@
       hostDashboard.hidden = false;
       hostDashboard.scrollTop = 0;
       $("dashboard-search").focus({ preventScroll: true });
-      renderDashboard();
-      if (!hostRefreshTimer) hostRefreshTimer = window.setInterval(renderDashboard, 30000);
+      void refreshDashboard();
+      if (!hostRefreshTimer) hostRefreshTimer = window.setInterval(() => { void refreshDashboard(); }, 30000);
     }
     function resetUnlockButton() {
       unlockPending = false;
@@ -2139,7 +2200,25 @@
       });
       document.querySelector(".waiting-section").hidden = Boolean(search) && !visibleWaiting.length;
     }
-    $("refresh-dashboard").addEventListener("click", renderDashboard);
+    async function refreshDashboard() {
+      const status = $("dashboard-sync-status");
+      if (!CONFIG.rsvpApiUrl) {
+        status.textContent = "Shared RSVP sync is not connected yet. Confirmations from other devices will not appear here.";
+        renderDashboard();
+        return;
+      }
+      status.textContent = "Syncing shared confirmations…";
+      try {
+        await refreshAcceptedFromServer();
+        status.textContent = `Shared RSVP list updated at ${new Date().toLocaleTimeString()}.`;
+        renderDashboard();
+      } catch (error) {
+        console.error("Could not refresh the shared RSVP list.", error);
+        status.textContent = `Could not sync confirmations: ${error.message}`;
+        renderDashboard();
+      }
+    }
+    $("refresh-dashboard").addEventListener("click", () => { void refreshDashboard(); });
     $("dashboard-search").addEventListener("input", renderDashboard);
     window.addEventListener("storage", (event) => {
       if (event.key === STORE_KEY && !hostDashboard.hidden) renderDashboard();
@@ -2462,13 +2541,26 @@
       window.setTimeout(() => layer.remove(), 4800);
     }
 
-    yesButton.addEventListener("click", () => {
+    yesButton.addEventListener("click", async () => {
       if (!activeGuest || yesButton.disabled) return;
       stopBackgroundMusic();
-      addAccepted(activeGuest);
-      showConfirmedState(activeGuest, true);
-      showCelebrationVideos();
-      celebrate();
+      const originalLabel = yesButton.textContent;
+      confirmation.hidden = true;
+      yesButton.disabled = true;
+      yesButton.textContent = "Saving your RSVP…";
+      try {
+        await saveAcceptedToServer(activeGuest);
+        addAccepted(activeGuest);
+        showConfirmedState(activeGuest, true);
+        showCelebrationVideos();
+        celebrate();
+      } catch (error) {
+        console.error("Could not save the shared RSVP.", error);
+        confirmation.textContent = error.message || "Your RSVP could not be saved. Please try again.";
+        confirmation.hidden = false;
+        yesButton.disabled = false;
+        yesButton.textContent = originalLabel;
+      }
     });
 
     /* ---------- Music ---------- */
