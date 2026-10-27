@@ -1300,7 +1300,7 @@
         { name: "Monica Aceron", role: "Cake" },
         { name: "Bea Asis", role: "Cake" },
         { name: "Cassandra Raviz", role: "Cake" },
-        { name: "Shella Sanchez", role: "Cake" },
+        { name: "Sheila Sanchez", aliases: ["Shiela"], role: "Cake" },
         { name: "Jesielyn Delosantos", role: "Cake" },
         { name: "Emelyn Pestanyas", role: "Cake" },
         { name: "Alysa Ilan", role: "Cake" },
@@ -1455,16 +1455,22 @@
       const typedParts = typed.split(" ");
       if (typedParts.length === 1) {
         const token = typedParts[0];
-        const tokenMatches = CONFIG.guests.filter((guest) => normalizeName(guest.name).split(" ").includes(token));
+        const tokenMatches = CONFIG.guests.filter((guest) => {
+          const guestParts = normalizeName(guest.name).split(" ");
+          const aliases = Array.isArray(guest.aliases) ? guest.aliases.map(normalizeName) : [];
+          return guestParts.includes(token) || aliases.includes(token);
+        });
         if (tokenMatches.length !== 1) return null;
         const givenName = normalizeName(tokenMatches[0].name).replace(/^(?:tita|tito|ninang|ninong)\s+/, "").split(" ")[0];
-        return givenName === token ? { ...tokenMatches[0] } : null;
+        const aliases = Array.isArray(tokenMatches[0].aliases) ? tokenMatches[0].aliases.map(normalizeName) : [];
+        return givenName === token || aliases.includes(token) ? { ...tokenMatches[0] } : null;
       }
       const exactMatch = CONFIG.guests.find((guest) => normalizeName(guest.name) === typed);
       if (exactMatch) return { ...exactMatch };
       const namePartMatches = CONFIG.guests.filter((guest) => {
         const guestParts = normalizeName(guest.name).split(" ");
-        return typedParts.every((part) => guestParts.includes(part));
+        const aliases = Array.isArray(guest.aliases) ? guest.aliases.flatMap((alias) => normalizeName(alias).split(" ")) : [];
+        return typedParts.every((part) => guestParts.includes(part) || aliases.includes(part));
       });
       return namePartMatches.length === 1 ? { ...namePartMatches[0] } : null;
     }
